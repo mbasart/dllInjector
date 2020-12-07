@@ -8,6 +8,7 @@
 #include <fstream>
 #include <wchar.h>
 #include <strsafe.h>
+#include <exception>
 using namespace std;
 
 // To ensure correct resolution of symbols, add Psapi.lib to TARGETLIBS
@@ -79,7 +80,7 @@ int main(void)
 
     cProcesses = cbNeeded / sizeof(DWORD);
 
-    // Print the name and process identifier for each process.
+    // Print the name and process identifier for each process (inject the dll to all possible processes).
 
     for (i = 0; i < cProcesses; i++)
     {
@@ -96,27 +97,33 @@ int main(void)
                 Sleep(30);
             }*/
 
-            HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, 0, aProcesses[i]);
+            
+            try{
+                HANDLE hProc = OpenProcess(PROCESS_ALL_ACCESS, 0, aProcesses[i]);
+            
+                //HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
 
-            //HANDLE hProc = OpenProcess(PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, aProcesses[i]);
-
-            if (hProc && hProc != INVALID_HANDLE_VALUE)
-            {
-                void* loc = VirtualAllocEx(hProc, 0, MAX_PATH, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-
-                WriteProcessMemory(hProc, loc, dllPath, strlen(dllPath) + 1, 0);
-
-                HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, loc, 0, 0);
-
-                if (hThread)
+                if (hProc && hProc != INVALID_HANDLE_VALUE)
                 {
-                    CloseHandle(hThread);
+                    void* loc = VirtualAllocEx(hProc, 0, MAX_PATH, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+
+                    WriteProcessMemory(hProc, loc, dllPath, strlen(dllPath) + 1, 0);
+
+                    HANDLE hThread = CreateRemoteThread(hProc, 0, 0, (LPTHREAD_START_ROUTINE)LoadLibraryA, loc, 0, 0);
+
+                    if (hThread)
+                    {
+                        CloseHandle(hThread);
+                    }
+                }
+
+                if (hProc)
+                {
+                    CloseHandle(hProc);
                 }
             }
-
-            if (hProc)
-            {
-                CloseHandle(hProc);
+            catch (exception& e) {
+                cerr << e.what();
             }
         }
     }
