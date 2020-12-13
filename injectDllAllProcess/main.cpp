@@ -18,7 +18,8 @@ int main(void)
     DWORD aProcesses[8192], cbNeeded, cProcesses;
     unsigned int i;
 
-    const char* dllPath = "C:\\Users\\User\\Desktop\\MALW2\\hook64v3.dll";
+    //const char* dllPath = "C:\\Users\\User\\Desktop\\MALW2\\hook64v3.dll";
+    const char* dllPath = "..\\hook32v2.dll";
 
     if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded))
     {
