@@ -11,54 +11,6 @@
 #include <exception>
 using namespace std;
 
-// To ensure correct resolution of symbols, add Psapi.lib to TARGETLIBS
-// and compile with -DPSAPI_VERSION=1
-
-/*
-int PrintProcessNameAndID(DWORD processID)
-{
-    TCHAR szProcessName[MAX_PATH] = TEXT("<unknown>");
-    int valueProc = 0; //si es unknow retorna 0, know 1!!!!!!!!!!!!!!
-
-    // Get a handle to the process.
-
-    HANDLE hProcess = OpenProcess(PROCESS_QUERY_INFORMATION |
-        PROCESS_VM_READ,
-        FALSE, processID);
-
-    // Get the process name.
-
-    if (NULL != hProcess)
-    {
-        HMODULE hMod;
-        DWORD cbNeeded;
-
-        if (EnumProcessModules(hProcess, &hMod, sizeof(hMod),
-            &cbNeeded))
-        {
-            GetModuleBaseName(hProcess, hMod, szProcessName,
-                sizeof(szProcessName) / sizeof(TCHAR));
-        }
-    }
-
-    // Print the process name and identifier. 
-
-    _tprintf(TEXT("%s  (PID: %u)\n"), szProcessName, processID);
-
-    if (wcscmp(szProcessName, TEXT("<unknown>")) == 0)
-    { 
-        valueProc = 0;
-        printf("Unknown\n");
-    }
-    else
-        valueProc = 1;
-
-    // Release the handle to the process.
-
-    CloseHandle(hProcess);
-    return valueProc;
-}*/
-
 std::string GetLastErrorAsString()
 {
     //Get the error message, if any. 
@@ -99,8 +51,6 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
     //const char* dllPath = "C:\\Users\\User\\Desktop\\MALW2\\hook32v2.dll";
     const char* dllPath = "C:\\ProgramData\\hook32v2.dll";
-    //const char* procName = "csgo.exe";
-    //DWORD procId = 0;
 
     if (!EnumProcesses(aProcesses, sizeof(aProcesses), &cbNeeded))
     {
@@ -118,16 +68,7 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
     {
         if (aProcesses[i] != 0)
         {
-            //int resultValue = PrintProcessNameAndID(aProcesses[i]);
             //_tprintf(TEXT("  (PID: %u)\n"), aProcesses[i]);
-
-            //procId = aProcesses[i];
-
-            /*while (!procId)
-            {
-                procId = GetProcId(procName);
-                Sleep(30);
-            }*/
 
             
             try{
